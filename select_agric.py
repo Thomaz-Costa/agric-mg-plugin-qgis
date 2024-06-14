@@ -23,7 +23,7 @@
 """
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QMainWindow, QPushButton, QToolTip, QLabel, QTextEdit
+from PyQt5.QtWidgets import QAction, QMainWindow, QPushButton, QToolTip, QLabel, QTextEdit, QMessageBox
 from qgis.core import *
 from qgis.utils import iface
 
@@ -267,6 +267,10 @@ class SelectAgric:
 
         else: print('Parametro incorreto! digite um número entre 1 e 12')
         return lista_param
+
+    # Method to debug the code without the need of installing a remote debugger
+    def debugObject(self, obj):
+        QMessageBox.information(self.iface.mainWindow(), "Debug", obj)
 
     def run(self):
         """Run method that performs all the real work"""
