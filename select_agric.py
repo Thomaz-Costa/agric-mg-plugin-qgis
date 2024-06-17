@@ -42,6 +42,40 @@ import os.path
 import processing
 import os
 
+from qgis.core import (
+QgsApplication,
+QgsDataSourceUri,
+QgsCategorizedSymbolRenderer,
+QgsClassificationRange,
+QgsPointXY,
+QgsProject,
+QgsExpression,
+QgsField,
+QgsFields,
+QgsFeature,
+QgsFeatureRequest,
+QgsFeatureRenderer,
+QgsGeometry,
+QgsGraduatedSymbolRenderer,
+QgsMarkerSymbol,
+QgsMessageLog,
+QgsRectangle,
+QgsRendererCategory,
+QgsRendererRange,
+QgsSymbol,
+QgsVectorDataProvider,
+QgsVectorLayer,
+QgsVectorFileWriter,
+QgsWkbTypes,
+QgsSpatialIndex,
+QgsVectorLayerUtils
+)
+
+from qgis.core.additions.edit import edit
+from qgis.PyQt.QtGui import (
+QColor,
+)
+
 QgsApplication.instance().arguments()
 
 class SelectAgric:
@@ -305,11 +339,14 @@ class SelectAgric:
             espg = self.ESPG
 
             # acessa Carta topografica 1:250.000
-            dir_layer0 = r'C:\\Users\\thomaz.costa\\Documents\\AProSEG_Pastagem\\BaseDados\\Cartas_250000_registradas\\'+ str(carta) +'.tif' 
-            rlayer0 = QgsRasterLayer(dir_layer0, "propriedades", "ogr")
-            if rlayer0.isValid():
-                QgsProject.instance().addMapLayer(rlayer0)
-            else: pass
+            dir ='C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/Cartas_250000_registradas/'
+            file = str(carta) +'.tif'
+            dir_file = dir + file
+
+            if (os.path.exists(dir_file)): 
+                iface.addRasterLayer(dir_file)
+            # else:
+            #     self.debugObject('Arquivo nao encontrado')
 
             # acessa layer de articulaçoes do IBGE
             dir_layer = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/IBGE/Layers_Articulacoes_IBGE_250000_sirgas2000.shp'
@@ -519,7 +556,7 @@ class SelectAgric:
 
             # carregando o resultado em tela
             iface.addRasterLayer(saida7)
-            pass
+            # pass
 
             # ----------------------------------------------------
             # ----------------------------------------------------
@@ -579,7 +616,7 @@ class SelectAgric:
 
             # carregando o resultado em tela
             iface.addRasterLayer(saida8)
-            pass
+            # pass
 
             #-------------------------------------------------------
             #-------------------------------------------------------
@@ -595,9 +632,10 @@ class SelectAgric:
             # saida7 em aptagric é saida8 aqui
             saida8 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
 
-            # Resultado Final (seleção de áreas para agricultura)
+            # Resultado parcial ClasDecliv x DegrPast (seleção de áreas para agricultura)
             saida9 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/SelectAgric_' + carta + '.tif'
 
+        
             #  Overlay (booleano) ClasDecliv, DegrPast, AptAgric
             processing.run("native:rasterbooleanand", {
                 'INPUT': [saida4, saida7, saida8],
@@ -611,7 +649,7 @@ class SelectAgric:
             iface.addRasterLayer(saida9)
 
             # Resultado Final (seleção de áreas para agricultura)
-            saida10 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Area_SelectAgric_' + carta + '.tif'
+            saida11 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Area_SelectAgric_' + carta + '.tif'
 
             # Classifica por limite de área (ha)
             processing.run(
@@ -622,13 +660,13 @@ class SelectAgric:
             'method':0,
             '-c':False,
             '-d':False,
-            'output':saida10,
+            'output':saida11,
             'GRASS_REGION_PARAMETER':None,
             'GRASS_REGION_CELLSIZE_PARAMETER':0,
             'GRASS_RASTER_FORMAT_OPT':'',
             'GRASS_RASTER_FORMAT_META':''})
             
              # carregando o resultado em tela
-            iface.addRasterLayer(saida10)
+            iface.addRasterLayer(saida11)
 
             pass
