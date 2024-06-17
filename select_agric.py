@@ -345,8 +345,8 @@ class SelectAgric:
 
             if (os.path.exists(dir_file)): 
                 iface.addRasterLayer(dir_file)
-            # else:
-            #     self.debugObject('Arquivo nao encontrado')
+            else:
+                self.debugObject('Carta 1:250.000 não disponível')
 
             # acessa layer de articulaçoes do IBGE
             dir_layer = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/IBGE/Layers_Articulacoes_IBGE_250000_sirgas2000.shp'
@@ -436,7 +436,7 @@ class SelectAgric:
                     rst_out = None
                     # --------------------------------------------------------------  
                 
-                    saida2 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Dem_' + carta + '.tif'
+                    dem_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Dem_' + carta + '.tif'
 
                     # recorta o DEM pelo limite da carta
                     processing.run("gdal:cliprasterbymasklayer",
@@ -456,16 +456,16 @@ class SelectAgric:
                                     'OPTIONS': '',
                                     'DATA_TYPE': 0,
                                     'EXTRA': '',
-                                    'OUTPUT': saida2})
+                                    'OUTPUT': dem_carta})
                     
                     #  # carregando o resultado em tela
-                    # iface.addRasterLayer(saida2)
+                    # iface.addRasterLayer(dem_carta)
                     
-                    saida3 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Slope_' + carta + '.tif'
+                    slope_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Slope_' + carta + '.tif'
                     
                     # calcula declividade %
                     processing.run("grass7:r.slope.aspect", {
-                                    'elevation': saida2,
+                                    'elevation': dem_carta,
                                     'format':1,
                                     'precision':0,
                                     '-a':True,
@@ -473,30 +473,30 @@ class SelectAgric:
                                     '-n':False,
                                     'zscale':1,
                                     'min_slope':0,
-                                    'slope': saida3,
+                                    'slope': slope_carta,
                                     'GRASS_REGION_PARAMETER':None,'GRASS_REGION_CELLSIZE_PARAMETER':0,
                                     'GRASS_RASTER_FORMAT_OPT':'',
                                     'GRASS_RASTER_FORMAT_META':''})
                     
                     #  # carregando o resultado em tela
-                    # iface.addRasterLayer(saida3)
+                    # iface.addRasterLayer(slope_carta)
 
-                    saida4 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
+                    clas_slope = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
 
                     # classes de declividade pela a escolha do usuario
                     processing.run("native:reclassifybytable", {
-                    'INPUT_RASTER':saida3,
+                    'INPUT_RASTER':slope_carta,
                     'RASTER_BAND':1,
                     'TABLE': lista_param,
                     'NO_DATA':0,
                     'RANGE_BOUNDARIES':1,
                     'NODATA_FOR_MISSING':False,
                     'DATA_TYPE':5,
-                    'OUTPUT': saida4
+                    'OUTPUT': clas_slope
                     })
 
                     # carregando o resultado em tela
-                    iface.addRasterLayer(saida4)
+                    iface.addRasterLayer(clas_slope)
 
             #-------------------------------------------------------
             #-------------------------------------------------------
@@ -515,9 +515,9 @@ class SelectAgric:
 
             # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE
 
-            saida6 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Pastagem_' + carta + '.tif'
+            past_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Pastagem_' + carta + '.tif'
         
-            # recorta o DEM pelo limite da carta
+            # recorta Pastagem pelo limite da carta
             processing.run("gdal:cliprasterbymasklayer",
                         {'INPUT': rlayer,
                             'MASK': temporario['OUTPUT'],
@@ -535,27 +535,27 @@ class SelectAgric:
                             'OPTIONS': '',
                             'DATA_TYPE': 0,
                             'EXTRA': '',
-                            'OUTPUT': saida6})
+                            'OUTPUT': past_carta})
             
             #  # carregando o resultado em tela
-            # iface.addRasterLayer(saida6)
+            # iface.addRasterLayer(past_carta)
 
-            saida7 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
+            clas_past = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
 
             # classes de degradacao pastagem pela escolha do usuario
             processing.run("native:reclassifybytable", {
-                'INPUT_RASTER': saida6,
+                'INPUT_RASTER': past_carta,
                 'RASTER_BAND': 1,
                 'TABLE': lista_param1,
                 'NO_DATA': 0,
                 'RANGE_BOUNDARIES': 1,
                 'NODATA_FOR_MISSING': False,
                 'DATA_TYPE': 5,
-                'OUTPUT': saida7
+                'OUTPUT': clas_past
             })
 
             # carregando o resultado em tela
-            iface.addRasterLayer(saida7)
+            iface.addRasterLayer(clas_past)
             # pass
 
             # ----------------------------------------------------
@@ -575,7 +575,7 @@ class SelectAgric:
 
             # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE (temporario)
 
-            saida6 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/AptAgric_' + carta + '.tif'
+            aptagric_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/AptAgric_' + carta + '.tif'
 
             # recorta pedoecol_mg do CNPS pelo limite da carta
             processing.run("gdal:cliprasterbymasklayer",
@@ -595,27 +595,27 @@ class SelectAgric:
                             'OPTIONS': '',
                             'DATA_TYPE': 0,
                             'EXTRA': '',
-                            'OUTPUT': saida6})
+                            'OUTPUT': aptagric_carta})
             
             #  # carregando o resultado em tela
-            # iface.addRasterLayer(saida6)
+            # iface.addRasterLayer(AptAgric_carta)
 
-            saida8 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
+            clas_aptagric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
 
             # classes de degradacao pastagem pela a escolha do usuario
             processing.run("native:reclassifybytable", {
-                'INPUT_RASTER': saida6,
+                'INPUT_RASTER': aptagric_carta,
                 'RASTER_BAND': 1,
                 'TABLE': lista_param2,
                 'NO_DATA':0,
                 'RANGE_BOUNDARIES':1,
                 'NODATA_FOR_MISSING':False,
                 'DATA_TYPE':5,
-                'OUTPUT': saida8
+                'OUTPUT': clas_aptagric
             })
 
             # carregando o resultado em tela
-            iface.addRasterLayer(saida8)
+            iface.addRasterLayer(clas_aptagric)
             # pass
 
             #-------------------------------------------------------
@@ -623,50 +623,50 @@ class SelectAgric:
             # OVERLAY (BOOLEANO)
 
             # ClasDecliv
-            saida4 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
+            clas_slope = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
             
             # DegrPast
-            saida7 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
+            clas_past = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
             
             # AptAgric
             # saida7 em aptagric é saida8 aqui
-            saida8 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
+            clas_aptagric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
 
             # Resultado parcial ClasDecliv x DegrPast (seleção de áreas para agricultura)
-            saida9 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/SelectAgric_' + carta + '.tif'
+            select_agric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/SelectAgric_' + carta + '.tif'
 
         
             #  Overlay (booleano) ClasDecliv, DegrPast, AptAgric
             processing.run("native:rasterbooleanand", {
-                'INPUT': [saida4, saida7, saida8],
-                'REF_LAYER': saida4,
+                'INPUT': [clas_slope, clas_past, clas_aptagric],
+                'REF_LAYER': clas_slope,
                 'NODATA_AS_FALSE': False,
                 'NO_DATA': 0,
                 'DATA_TYPE': 1,
-                'OUTPUT': saida9})
+                'OUTPUT': select_agric})
 
             # carregando o resultado em tela
-            iface.addRasterLayer(saida9)
+            iface.addRasterLayer(select_agric)
 
             # Resultado Final (seleção de áreas para agricultura)
-            saida11 = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Area_SelectAgric_' + carta + '.tif'
+            area_select_agric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Area_SelectAgric_' + carta + '.tif'
 
             # Classifica por limite de área (ha)
             processing.run(
             "grass7:r.reclass.area",
-            {'input': saida9,
+            {'input': select_agric,
             'value':self.area_min,
             'mode':1,
             'method':0,
             '-c':False,
             '-d':False,
-            'output':saida11,
+            'output':area_select_agric,
             'GRASS_REGION_PARAMETER':None,
             'GRASS_REGION_CELLSIZE_PARAMETER':0,
             'GRASS_RASTER_FORMAT_OPT':'',
             'GRASS_RASTER_FORMAT_META':''})
             
              # carregando o resultado em tela
-            iface.addRasterLayer(saida11)
+            iface.addRasterLayer(area_select_agric)
 
             pass
