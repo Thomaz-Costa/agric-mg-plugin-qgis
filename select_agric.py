@@ -227,13 +227,26 @@ class SelectAgric:
 
     def variaveis(self):
         """define variaveis utilizadas na funcao run"""
+
+         # Variavel escolha (Carta, Municipio ou Mesoregiao)
+        # Carta = 0 / Municipio = 1/ Mesoregiao = 2
+        self.escolha = self.dlg.spinBox_5.value()
+
         # Variaveis para Declividade
         self.decliv_min = self.dlg.doubleSpinBox.value()
         self.decliv_max = self.dlg.doubleSpinBox_2.value()
 
-        # Variaveis para conversão utm e para tile (carta 1:250.000)
+        # Variaveis para conversão utm
         self.zona = self.dlg.spinBox_2.value()
+
+        # Variavel para tile (carta 1:250.000)
         self.carta = self.dlg.textEdit.toPlainText()
+
+         # Variavel para Municipios
+        self.munic = self.dlg.textEdit.toPlainText()
+
+        # Variavel para Mesoregioes
+        self.meso = self.dlg.textEdit.toPlainText()
 
         # Variável para Degr.Past
         self.degrpast = self.dlg.spinBox.value()
@@ -262,6 +275,8 @@ class SelectAgric:
         return lista_param
             
     def lista_param_result1(self):
+        if self.degrpast == 0:
+            lista_param = ['1', '4', '1']
         if self.degrpast == 1:
             lista_param = ['1', '2', '1','2', '4', '0']
         elif self.degrpast == 2:
@@ -326,6 +341,13 @@ class SelectAgric:
              # chamando as variaveis
             self.variaveis()
 
+            if self.escolha == 0:
+                self.var = self.carta
+            if self.escolha == 1:
+                self.var = self.munic
+            if self.escolha == 2:
+                self.var = self.meso
+
             #-------------------------------------------------------
             # ------------------------------------------------------
             # clas_decliv.py
@@ -338,27 +360,56 @@ class SelectAgric:
             carta = self.carta
             espg = self.ESPG
 
-            # acessa Carta topografica 1:250.000
-            dir ='C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/Cartas_250000_registradas/'
-            file = str(carta) +'.tif'
-            dir_file = dir + file
-
-            if (os.path.exists(dir_file)): 
-                iface.addRasterLayer(dir_file)
-            else:
-                self.debugObject('Carta 1:250.000 não disponível')
-
-            # acessa layer de articulaçoes do IBGE
-            dir_layer = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/IBGE/Layers_Articulacoes_IBGE_250000_sirgas2000.shp'
-
-            vlayer = QgsVectorLayer(dir_layer, "Articul_250000", "ogr")
-            if not vlayer.isValid():
+           # acessa layer do CAR (limites de propriedades)
+            dir_layer0 = 'C:/PyQGIS/Dados/AREA_IMOVEL_1.shp' 
+            vlayer0 = QgsVectorLayer(dir_layer0, "propriedades", "ogr")
+            if not vlayer0.isValid():
                 print("Layer failed to load!")
             # else:
             #     QgsProject.instance().addMapLayer(vlayer)
 
+            if self.escolha == 0:
+                # acessa Carta topografica 1:250.000
+                dir ='C:/PyQGIS/Dados/Cartas_250000/'
+                file = str(carta) +'.tif'
+                dir_file = dir + file
+
+                if (os.path.exists(dir_file)): 
+                    iface.addRasterLayer(dir_file)
+                else:
+                    self.debugObject('Carta 1:250.000 não disponível')
+
+                # acessa layer de articulaçoes do IBGE (cartas)
+                dir_layer = 'C:/PyQGIS/Dados/Layers_Articulacoes_IBGE_250000_sirgas2000.shp'
+
+                vlayer = QgsVectorLayer(dir_layer, "Articul_250000", "ogr")
+                if not vlayer.isValid():
+                    print("Layer failed to load!")
+                # else:
+                #     QgsProject.instance().addMapLayer(vlayer)
+
+            if self.escolha == 1:
+                # acessa layer de Municipios
+                dir_layer = 'C:/PyQGIS/Dados/MG_Municipios_2022.shp'
+
+                vlayer = QgsVectorLayer(dir_layer, "MG_Municipios_2022", "ogr")
+                if not vlayer.isValid():
+                    print("Layer failed to load!")
+                # else:
+                #     QgsProject.instance().addMapLayer(vlayer)
+
+            if self.escolha == 2:
+                # acessa layer de Mesoregioes
+                dir_layer = 'C:/PyQGIS/Dados/MG_Mesorregioes_2022.shp'
+
+                vlayer = QgsVectorLayer(dir_layer, "MG_Mesoregioes_2022", "ogr")
+                if not vlayer.isValid():
+                    print("Layer failed to load!")
+                # else:
+                #     QgsProject.instance().addMapLayer(vlayer)
+
              # direcionando para o dir da zona para selecionar o DEM
-            pasta = r'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/watershade_z'+str(self.zona)+'utm/Relevo/'
+            pasta = r'C:/PyQGIS/Dados/'
             file = 'NasaDEM_MG-1_Z'+str(self.zona)+'_utm.tif'
 
             # acessa DEM da zona
@@ -369,140 +420,198 @@ class SelectAgric:
             # else:
             #     QgsProject.instance().addMapLayer(rlayer)
 
+            if self.escolha == 0:
+                # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE
+                atributos = vlayer.getFeatures()
+                nomeCampo = 'Name'
 
-            # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE
-           
-            atributos = vlayer.getFeatures()
-            nomeCampo = 'Name'
+                indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
-            indiceCampo = vlayer.fields().indexOf(nomeCampo)
+                for atributo in atributos:
+                    cartas = atributo.attributes()[indiceCampo]
 
-            for atributo in atributos:
-                cartas = atributo.attributes()[indiceCampo]
+                    if carta in cartas:
+                        
+                        #saida = 'D:/Usuarios/AProSEG_Pastagem/'+ carta + '.shp'
+                        
+                        # gera a carta.shp
+                        temporario = processing.run("native:extractbyattribute",
+                                    {'INPUT': vlayer,
+                                        'FIELD': nomeCampo,
+                                        'OPERATOR': 0,
+                                        'VALUE': carta,
+                                        'OUTPUT': 'memory:'})
+                        
+            if self.escolha == 1:
+                # acesso ao municipio pela tabela de atributos do layer de Municipios de MG
+                atributos = vlayer.getFeatures()
+                nomeCampo = 'NM_MUN'
 
-                if carta in cartas:
-                    
-                    #saida = 'D:/Usuarios/AProSEG_Pastagem/'+ carta + '.shp'
-                    
-                    # gera a carta.shp
-                    temporario = processing.run("native:extractbyattribute",
-                                {'INPUT': vlayer,
-                                    'FIELD': nomeCampo,
-                                    'OPERATOR': 0,
-                                    'VALUE': carta,
-                                    'OUTPUT': 'memory:'})
-                    
+                indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
-                    # --------------------------------------------------------------
-                    # criando arquivo de saida para o grass
-                    fnm_input = pasta + file
-                    fnm_output = pasta + 'saida.tif'
+                munic = self.munic
 
-                    # abrir arquivo entrada em modo leitura (parametro 0)
-                    rst_input = gdal.Open(fnm_input, 0)
+                for atributo in atributos:
+                    munics = atributo.attributes()[indiceCampo]
 
-                    # carregar a banda 1 da camada de entrada para matriz numpy:
-                    # matriz = rst_input.GetRasterBand(1).ReadAsArray()
+                    if munic in munics:
+                        
+                        #munic = 'D:/Usuarios/AProSEG_Pastagem/'+ munic + '.shp'
+                        
+                        # gera o municipio.shp
+                        temporario = processing.run("native:extractbyattribute",
+                                    {'INPUT': vlayer,
+                                        'FIELD': nomeCampo,
+                                        'OPERATOR': 0,
+                                        'VALUE': munic,
+                                        'OUTPUT': 'memory:'})    
 
-                    # Obter metadados da camada de entrada e criar camada de saída
-                    # carregar driver para GeoTiff
-                    driver_tiff = gdal.GetDriverByName('GTiff')
+            if self.escolha == 2:
+                # acesso a mesoregiao pela tabela de atributos do layer de mesoregioes de MG
+                atributos = vlayer.getFeatures()
+                nomeCampo = 'NM_MESO'
 
-                    # criar raster de saída com metadados da camada de entrada
-                    x = rst_input.RasterXSize
-                    y = rst_input.RasterYSize
+                indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
-                    # camada raster de saída
-                    rst_out = driver_tiff.Create(fnm_output, xsize=x, ysize=y,\
-                    bands=1, eType=gdal.GDT_Float32)
+                meso = self.meso
 
-                    # configurar geotransformaçao com base na camada de entrada
-                    rst_out.SetGeoTransform(rst_input.GetGeoTransform())
+                for atributo in atributos:
+                    mesos = atributo.attributes()[indiceCampo]
 
-                    # obter o tamanho da celula
-                    cellsize = np.abs(rst_input.GetGeoTransform()[1])
+                    if meso in mesos:
+                        
+                        #munic = 'D:/Usuarios/AProSEG_Pastagem/'+ munic + '.shp'
+                        
+                        # gera o municipio.shp
+                        temporario = processing.run("native:extractbyattribute",
+                                    {'INPUT': vlayer,
+                                        'FIELD': nomeCampo,
+                                        'OPERATOR': 0,
+                                        'VALUE': meso,
+                                        'OUTPUT': 'memory:'})    
 
-                    # configurar projecao com base na camada de entrada
-                    rst_out.SetProjection(rst_input.GetProjection())
+             # Recorta layer propriedades (CAR)
+            car = 'C:/PyQGIS/propried_' + self.var + '.shp'
 
-                    # ler banda 1 da camada de saida
-                    bnd1 = rst_out.GetRasterBand(1).ReadAsArray()
+            processing.run("native:clip", {'INPUT':vlayer0,\
+            'OVERLAY':temporario['OUTPUT'], 'OUTPUT':car})
 
-                    # EXPORTAR CAMADA DE SAIDA
-                    #sobrescrever a banda 1 do raster de saida
-                    rst_out.GetRasterBand(1).WriteArray(bnd1)
+            vlayer_car = QgsVectorLayer(car, "propried", "ogr")
+            if not vlayer.isValid():
+                print("Layer failed to load!")
+            else:
+                QgsProject.instance().addMapLayer(vlayer_car)
 
-                    # fechar a camada
-                    rst_out = None
-                    # --------------------------------------------------------------  
-                
-                    dem_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Dem_' + carta + '.tif'
+            # --------------------------------------------------------------
+            # criando arquivo de saida para o grass
+            fnm_input = pasta + file
+            fnm_output = pasta + 'saida.tif'
 
-                    # recorta o DEM pelo limite da carta
-                    processing.run("gdal:cliprasterbymasklayer",
-                                {'INPUT': rlayer,
-                                    'MASK': temporario['OUTPUT'],
-                                    'SOURCE_CRS': 'EPSG:'+str(self.zona)+'-SIRGAS 2000/UTM Zone'+str(self.zona)+'S',
-                                    'TARGET_CRS': 'EPSG:'+str(self.zona)+'-SIRGAS 2000/UTM Zone'+str(self.zona)+'S',
-                                    'TARGET_EXTENT': None,
-                                    'NODATA': 0,
-                                    'ALPHA_BAND': False,
-                                    'CROP_TO_CUTLINE': True,
-                                    'KEEP_RESOLUTION': False,
-                                    'SET_RESOLUTION': False,
-                                    'X_RESOLUTION': x,
-                                    'Y_RESOLUTION': y,
-                                    'MULTITHREADING': False,
-                                    'OPTIONS': '',
-                                    'DATA_TYPE': 0,
-                                    'EXTRA': '',
-                                    'OUTPUT': dem_carta})
-                    
-                    #  # carregando o resultado em tela
-                    # iface.addRasterLayer(dem_carta)
-                    
-                    slope_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Slope_' + carta + '.tif'
-                    
-                    # calcula declividade %
-                    processing.run("grass7:r.slope.aspect", {
-                                    'elevation': dem_carta,
-                                    'format':1,
-                                    'precision':0,
-                                    '-a':True,
-                                    '-e':False,
-                                    '-n':False,
-                                    'zscale':1,
-                                    'min_slope':0,
-                                    'slope': slope_carta,
-                                    'GRASS_REGION_PARAMETER':None,'GRASS_REGION_CELLSIZE_PARAMETER':0,
-                                    'GRASS_RASTER_FORMAT_OPT':'',
-                                    'GRASS_RASTER_FORMAT_META':''})
-                    
-                    #  # carregando o resultado em tela
-                    # iface.addRasterLayer(slope_carta)
+            # abrir arquivo entrada em modo leitura (parametro 0)
+            rst_input = gdal.Open(fnm_input, 0)
 
-                    clas_slope = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
+            # carregar a banda 1 da camada de entrada para matriz numpy:
+            # matriz = rst_input.GetRasterBand(1).ReadAsArray()
 
-                    # classes de declividade pela a escolha do usuario
-                    processing.run("native:reclassifybytable", {
-                    'INPUT_RASTER':slope_carta,
-                    'RASTER_BAND':1,
-                    'TABLE': lista_param,
-                    'NO_DATA':0,
-                    'RANGE_BOUNDARIES':1,
-                    'NODATA_FOR_MISSING':False,
-                    'DATA_TYPE':5,
-                    'OUTPUT': clas_slope
-                    })
+            # Obter metadados da camada de entrada e criar camada de saída
+            # carregar driver para GeoTiff
+            driver_tiff = gdal.GetDriverByName('GTiff')
 
-                    # carregando o resultado em tela
-                    iface.addRasterLayer(clas_slope)
+            # criar raster de saída com metadados da camada de entrada
+            x = rst_input.RasterXSize
+            y = rst_input.RasterYSize
+
+            # camada raster de saída
+            rst_out = driver_tiff.Create(fnm_output, xsize=x, ysize=y,\
+            bands=1, eType=gdal.GDT_Float32)
+
+            # configurar geotransformaçao com base na camada de entrada
+            rst_out.SetGeoTransform(rst_input.GetGeoTransform())
+
+            # obter o tamanho da celula
+            cellsize = np.abs(rst_input.GetGeoTransform()[1])
+
+            # configurar projecao com base na camada de entrada
+            rst_out.SetProjection(rst_input.GetProjection())
+
+            # ler banda 1 da camada de saida
+            bnd1 = rst_out.GetRasterBand(1).ReadAsArray()
+
+            # EXPORTAR CAMADA DE SAIDA
+            #sobrescrever a banda 1 do raster de saida
+            rst_out.GetRasterBand(1).WriteArray(bnd1)
+
+            # fechar a camada
+            rst_out = None
+            # --------------------------------------------------------------  
+        
+            dem = 'C:/PyQGIS/Dem_' + self.var + '.tif'
+
+            # recorta o DEM pelo limite da carta
+            processing.run("gdal:cliprasterbymasklayer",
+                        {'INPUT': rlayer,
+                            'MASK': temporario['OUTPUT'],
+                            'SOURCE_CRS': 'EPSG:'+str(self.zona)+'-SIRGAS 2000/UTM Zone'+str(self.zona)+'S',
+                            'TARGET_CRS': 'EPSG:'+str(self.zona)+'-SIRGAS 2000/UTM Zone'+str(self.zona)+'S',
+                            'TARGET_EXTENT': None,
+                            'NODATA': 0,
+                            'ALPHA_BAND': False,
+                            'CROP_TO_CUTLINE': True,
+                            'KEEP_RESOLUTION': False,
+                            'SET_RESOLUTION': False,
+                            'X_RESOLUTION': x,
+                            'Y_RESOLUTION': y,
+                            'MULTITHREADING': False,
+                            'OPTIONS': '',
+                            'DATA_TYPE': 0,
+                            'EXTRA': '',
+                            'OUTPUT': dem})
+            
+            #  # carregando o resultado em tela
+            # iface.addRasterLayer(dem_carta)
+            
+            slope = 'C:/PyQGIS/Slope_' + self.var + '.tif'
+            
+            # calcula declividade %
+            processing.run("grass7:r.slope.aspect", {
+                            'elevation': dem,
+                            'format':1,
+                            'precision':0,
+                            '-a':True,
+                            '-e':False,
+                            '-n':False,
+                            'zscale':1,
+                            'min_slope':0,
+                            'slope': slope,
+                            'GRASS_REGION_PARAMETER':None,'GRASS_REGION_CELLSIZE_PARAMETER':0,
+                            'GRASS_RASTER_FORMAT_OPT':'',
+                            'GRASS_RASTER_FORMAT_META':''})
+            
+            #  # carregando o resultado em tela
+            # iface.addRasterLayer(slope_carta)
+
+            clas_slope = 'C:/PyQGIS/ClasSlope_' + self.var + '.tif'
+
+            # classes de declividade pela a escolha do usuario
+            processing.run("native:reclassifybytable", {
+            'INPUT_RASTER':slope,
+            'RASTER_BAND':1,
+            'TABLE': lista_param,
+            'NO_DATA':0,
+            'RANGE_BOUNDARIES':1,
+            'NODATA_FOR_MISSING':False,
+            'DATA_TYPE':5,
+            'OUTPUT': clas_slope
+            })
+
+            # carregando o resultado em tela
+            iface.addRasterLayer(clas_slope)
 
             #-------------------------------------------------------
             #-------------------------------------------------------
             # PROCESSA LAYER DEGRADACAO PASTAGENS DA UFG
 
-            pasta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/mg_pasture_quality_col7_s100_year=2021/'
+            pasta = 'C:/PyQGIS/Dados/'
             file = 'Pastagem_MapBiomas_2022.tif'
 
             # acessa Pastagem da UFG da zona
@@ -515,7 +624,7 @@ class SelectAgric:
 
             # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE
 
-            past_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Pastagem_' + carta + '.tif'
+            past = 'C:/PyQGIS/Pastagem_' + self.var + '.tif'
         
             # recorta Pastagem pelo limite da carta
             processing.run("gdal:cliprasterbymasklayer",
@@ -535,16 +644,16 @@ class SelectAgric:
                             'OPTIONS': '',
                             'DATA_TYPE': 0,
                             'EXTRA': '',
-                            'OUTPUT': past_carta})
+                            'OUTPUT': past})
             
             #  # carregando o resultado em tela
             # iface.addRasterLayer(past_carta)
 
-            clas_past = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
+            clas_past = 'C:/PyQGIS/ClasPast_' + self.var + '.tif'
 
             # classes de degradacao pastagem pela escolha do usuario
             processing.run("native:reclassifybytable", {
-                'INPUT_RASTER': past_carta,
+                'INPUT_RASTER': past,
                 'RASTER_BAND': 1,
                 'TABLE': lista_param1,
                 'NO_DATA': 0,
@@ -555,14 +664,14 @@ class SelectAgric:
             })
 
             # carregando o resultado em tela
-            iface.addRasterLayer(clas_past)
+            #iface.addRasterLayer(clas_past)
             # pass
 
             # ----------------------------------------------------
             # ----------------------------------------------------
             # PROCESSA LAYER APTIDAO AGRICOLA do CNPS
 
-            pasta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/BaseDados/Solos/'
+            pasta = 'C:/PyQGIS/Dados/'
             file = 'pedoecol_mg.tif'
 
             # acessa pedoecol da zona
@@ -575,7 +684,7 @@ class SelectAgric:
 
             # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE (temporario)
 
-            aptagric_carta = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/AptAgric_' + carta + '.tif'
+            aptagric = 'C:/PyQGIS/AptAgric_' + self.var + '.tif'
 
             # recorta pedoecol_mg do CNPS pelo limite da carta
             processing.run("gdal:cliprasterbymasklayer",
@@ -595,16 +704,16 @@ class SelectAgric:
                             'OPTIONS': '',
                             'DATA_TYPE': 0,
                             'EXTRA': '',
-                            'OUTPUT': aptagric_carta})
+                            'OUTPUT': aptagric})
             
             #  # carregando o resultado em tela
             # iface.addRasterLayer(AptAgric_carta)
 
-            clas_aptagric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
+            clas_aptagric = 'C:/PyQGIS/ClasAptAgric_' + self.var + '.tif'
 
             # classes de degradacao pastagem pela a escolha do usuario
             processing.run("native:reclassifybytable", {
-                'INPUT_RASTER': aptagric_carta,
+                'INPUT_RASTER': aptagric,
                 'RASTER_BAND': 1,
                 'TABLE': lista_param2,
                 'NO_DATA':0,
@@ -615,7 +724,7 @@ class SelectAgric:
             })
 
             # carregando o resultado em tela
-            iface.addRasterLayer(clas_aptagric)
+            #iface.addRasterLayer(clas_aptagric)
             # pass
 
             #-------------------------------------------------------
@@ -623,19 +732,24 @@ class SelectAgric:
             # OVERLAY (BOOLEANO)
 
             # ClasDecliv
-            clas_slope = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasSlope_' + carta + '.tif'
-            
+            clas_slope = 'C:/PyQGIS/ClasSlope_' + self.var + '.tif'
+            # carregando o resultado em tela
+            iface.addRasterLayer(clas_slope)
+
             # DegrPast
-            clas_past = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasPast_' + carta + '.tif'
+            clas_past = 'C:/PyQGIS/ClasPast_' + self.var + '.tif'
+            # carregando o resultado em tela
+            iface.addRasterLayer(clas_past)
             
             # AptAgric
             # saida7 em aptagric é saida8 aqui
-            clas_aptagric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/ClasAptAgric_' + carta + '.tif'
+            clas_aptagric = 'C:/PyQGIS/ClasAptAgric_' + self.var + '.tif'
+            # carregando o resultado em tela
+            iface.addRasterLayer(clas_aptagric)
 
-            # Resultado parcial ClasDecliv x DegrPast (seleção de áreas para agricultura)
-            select_agric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/SelectAgric_' + carta + '.tif'
+             # Resultado Final (seleção de áreas para agricultura)
+            select_agric = 'C:/PyQGIS/SelectAgric_' + self.var + '.tif'
 
-        
             #  Overlay (booleano) ClasDecliv, DegrPast, AptAgric
             processing.run("native:rasterbooleanand", {
                 'INPUT': [clas_slope, clas_past, clas_aptagric],
@@ -644,12 +758,12 @@ class SelectAgric:
                 'NO_DATA': 0,
                 'DATA_TYPE': 1,
                 'OUTPUT': select_agric})
-
+            
             # carregando o resultado em tela
             iface.addRasterLayer(select_agric)
 
             # Resultado Final (seleção de áreas para agricultura)
-            area_select_agric = 'C:/Users/thomaz.costa/Documents/AProSEG_Pastagem/Area_SelectAgric_' + carta + '.tif'
+            area_select_agric = 'C:/PyQGIS/Area_SelectAgric_' + self.var + '.tif'
 
             # Classifica por limite de área (ha)
             processing.run(
