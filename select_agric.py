@@ -380,12 +380,12 @@ class SelectAgric:
                     self.debugObject('Carta 1:250.000 não disponível')
 
                 # acessa layer de articulaçoes do IBGE (cartas)
-                dir_layer = 'C:/PyQGIS/Dados/Layers_Articulacoes_IBGE_250000_sirgas2000.shp'
+                dir_layer = 'C:/PyQGIS/Dados/Layers_Articulacoes_IBGE_250000.shp'
 
                 vlayer = QgsVectorLayer(dir_layer, "Articul_250000", "ogr")
                 if not vlayer.isValid():
                     print("Layer failed to load!")
-                # else:
+                #else:
                 #     QgsProject.instance().addMapLayer(vlayer)
 
             if self.escolha == 1:
@@ -427,6 +427,8 @@ class SelectAgric:
 
                 indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
+                temporario = None
+
                 for atributo in atributos:
                     cartas = atributo.attributes()[indiceCampo]
 
@@ -441,6 +443,11 @@ class SelectAgric:
                                         'OPERATOR': 0,
                                         'VALUE': carta,
                                         'OUTPUT': 'memory:'})
+                        break
+
+                if temporario is None:
+                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
+    
                         
             if self.escolha == 1:
                 # acesso ao municipio pela tabela de atributos do layer de Municipios de MG
@@ -450,6 +457,8 @@ class SelectAgric:
                 indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
                 munic = self.munic
+
+                temporario = None
 
                 for atributo in atributos:
                     munics = atributo.attributes()[indiceCampo]
@@ -464,7 +473,11 @@ class SelectAgric:
                                         'FIELD': nomeCampo,
                                         'OPERATOR': 0,
                                         'VALUE': munic,
-                                        'OUTPUT': 'memory:'})    
+                                        'OUTPUT': 'memory:'})
+                        break
+
+                if temporario is None:
+                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
 
             if self.escolha == 2:
                 # acesso a mesoregiao pela tabela de atributos do layer de mesoregioes de MG
@@ -474,6 +487,8 @@ class SelectAgric:
                 indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
                 meso = self.meso
+
+                temporario = None
 
                 for atributo in atributos:
                     mesos = atributo.attributes()[indiceCampo]
@@ -488,8 +503,12 @@ class SelectAgric:
                                         'FIELD': nomeCampo,
                                         'OPERATOR': 0,
                                         'VALUE': meso,
-                                        'OUTPUT': 'memory:'})    
+                                        'OUTPUT': 'memory:'})
+                        break
 
+                if temporario is None:
+                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
+    
              # Recorta layer propriedades (CAR)
             car = 'C:/PyQGIS/propried_' + self.var + '.shp'
 
