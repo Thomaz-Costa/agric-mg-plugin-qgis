@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
-    <height>567</height>
+    <width>548</width>
+    <height>448</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
     <rect>
-     <x>-60</x>
-     <y>520</y>
+     <x>10</x>
+     <y>410</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>60</y>
      <width>141</width>
      <height>20</height>
     </rect>
@@ -59,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>40</y>
+     <y>60</y>
      <width>131</width>
      <height>21</height>
     </rect>
@@ -78,8 +78,8 @@
   <widget class="QDoubleSpinBox" name="doubleSpinBox">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>80</y>
+     <x>90</x>
+     <y>110</y>
      <width>62</width>
      <height>22</height>
     </rect>
@@ -88,21 +88,21 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>80</y>
-     <width>51</width>
-     <height>16</height>
+     <x>10</x>
+     <y>110</y>
+     <width>81</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>decliv min:</string>
+    <string>decliv% min:</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>80</y>
+     <y>110</y>
      <width>61</width>
      <height>16</height>
     </rect>
@@ -115,7 +115,7 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>80</y>
+     <y>110</y>
      <width>62</width>
      <height>22</height>
     </rect>
@@ -127,9 +127,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>110</y>
-     <width>221</width>
+     <x>10</x>
+     <y>170</y>
+     <width>231</width>
      <height>21</height>
     </rect>
    </property>
@@ -141,7 +141,7 @@
    <property name="geometry">
     <rect>
      <x>250</x>
-     <y>110</y>
+     <y>170</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -150,18 +150,21 @@
   <widget class="QSpinBox" name="spinBox_3">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>140</y>
+     <x>480</x>
+     <y>10</y>
      <width>42</width>
      <height>22</height>
     </rect>
+   </property>
+   <property name="maximum">
+    <number>12</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>480</y>
+     <x>130</x>
+     <y>360</y>
      <width>91</width>
      <height>16</height>
     </rect>
@@ -173,8 +176,8 @@
   <widget class="QSpinBox" name="spinBox_4">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>480</y>
+     <x>230</x>
+     <y>360</y>
      <width>71</width>
      <height>22</height>
     </rect>
@@ -186,14 +189,15 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>140</y>
-     <width>181</width>
+     <x>320</x>
+     <y>10</y>
+     <width>151</width>
      <height>321</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AptAgric: Entre com o número!&lt;/p&gt;&lt;p&gt;1-(Lavoura e pecuaria)&lt;/p&gt;&lt;p&gt;2-(Lavoura e reflorestamento)&lt;/p&gt;&lt;p&gt;3-(Pecuaria e lavoura)&lt;/p&gt;&lt;p&gt;4-(Pecuaria e reflorestamento)&lt;/p&gt;&lt;p&gt;5-agua&lt;/p&gt;&lt;p&gt;6-Lavoura (pecuaria)&lt;/p&gt;&lt;p&gt;7-Lavoura e pecuaria&lt;/p&gt;&lt;p&gt;8-Pecuaria (lavoura)&lt;/p&gt;&lt;p&gt;9-Preservacao&lt;/p&gt;&lt;p&gt;10-Preservacao (lavoura e pecuari&lt;/p&gt;&lt;p&gt;11-Preservacao (pecuaria e lavour&lt;/p&gt;&lt;p&gt;12-Preservacao (pecuaria)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;1&quot; cellpadding=&quot;1&quot;&gt;&lt;tr&gt;&lt;td width=&quot;50&quot;&gt;&lt;p&gt;AptAgric: Entre com o número:&lt;/p&gt;&lt;p&gt;1-(Lavoura e pecuaria)&lt;/p&gt;&lt;p&gt;2-(Lavoura e reflorestamento)&lt;/p&gt;&lt;p&gt;3-(Pecuaria e lavoura)&lt;/p&gt;&lt;p&gt;4-(Pecuaria e reflorestamento)&lt;/p&gt;&lt;p&gt;5-agua&lt;/p&gt;&lt;p&gt;6-Lavoura (pecuaria)&lt;/p&gt;&lt;p&gt;7-Lavoura e pecuaria&lt;/p&gt;&lt;p&gt;8-Pecuaria (lavoura)&lt;/p&gt;&lt;p&gt;9-Preservacao&lt;/p&gt;&lt;p&gt;10-Preservacao (lavoura e pecuari&lt;/p&gt;&lt;p&gt;11-Preservacao (pecuaria e lavour&lt;/p&gt;&lt;p&gt;12-Preservacao (pecuaria)&lt;/p&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;
+</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_9">
@@ -217,6 +221,35 @@
      <width>42</width>
      <height>22</height>
     </rect>
+   </property>
+   <property name="maximum">
+    <number>2</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>220</y>
+     <width>211</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td width=&quot;72&quot;&gt;&lt;p&gt;Classe de Solo: Entre com o número:&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td/&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;0-Argis+Cambis+Latos+Luvis+Nitos&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;1-Argissolo&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;2-Cambissolo&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;3-Latossolo&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;4-Luvissolo&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;5-Nitossolo&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_6">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>220</y>
+     <width>41</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
    </property>
   </widget>
  </widget>

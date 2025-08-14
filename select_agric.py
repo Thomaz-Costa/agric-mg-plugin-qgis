@@ -251,11 +251,14 @@ class SelectAgric:
         # Variável para Degr.Past
         self.degrpast = self.dlg.spinBox.value()
 
-        # Variável para Aptidão Agricola Pedoecol CNPS
+        # Variável para Aptidão Agricola Agroecol CNPS
         self.aptagric = self.dlg.spinBox_3.value()
 
         # Variável para área mínima (ha)
         self.area_min = self.dlg.spinBox_4.value()
+        
+        # Variável para classe de solo
+        self.solo = self.dlg.spinBox_6.value()
 
     def ESPG(self):
         if self.zona == 22:
@@ -270,8 +273,9 @@ class SelectAgric:
 
     def lista_param_result (self):
 
-        lista_param = [str(self.decliv_min),str(self.decliv_max),'1',str(self.decliv_max),'60000','0'\
-    ,'-33000',str(self.decliv_min),'0']
+        lista_param = [str(self.decliv_min),str(self.decliv_max),'1', \
+                       str(self.decliv_max),'60000','0'\
+                    ,'-33000',str(self.decliv_min),'0']
         return lista_param
             
     def lista_param_result1(self):
@@ -283,8 +287,14 @@ class SelectAgric:
             lista_param = ['1', '2', '0','2', '3', '1','3','4','0']
         elif self.degrpast == 3:
             lista_param = ['1', '3', '0','3','4','1']
+        elif self.degrpast == 12:
+            lista_param = ['1', '3', '1', '3', '4', '0']
+        elif self.degrpast == 13:
+            lista_param = ['1', '2', '1','2','3','0','3', '4', '1']
+        elif self.degrpast == 23:
+            lista_param = ['1', '2', '0', '2', '4', '1']    
         else:
-            print("Parametro incorreto! digite 1, 2 ou 3")
+            print("Parametro incorreto! digite 0, 1, 2, 3, 12, 13 ou 23")
         return lista_param
 
     def lista_param_result2(self):    
@@ -315,6 +325,41 @@ class SelectAgric:
             lista_param = ['0', '12', '0','12', '13', '1']
 
         else: print('Parametro incorreto! digite um número entre 1 e 12')
+        return lista_param
+    
+    # Classe de solo
+    def lista_param_result3(self): 
+        if self.solo == 0:
+            lista_param = ['1', '14', '1']
+        if self.solo == 1:
+            lista_param = ['1', '4', '1', '4', '14', '0']
+        elif self.solo == 2:
+            lista_param = ['1', '4', '0','4', '7', '1','7','14','0']
+        elif self.solo == 3:
+            lista_param = ['1', '7', '0','7', '11', '1','11','14','0']
+        elif self.solo == 4:
+            lista_param = ['1', '11', '0','11', '13', '1','13','14','0']
+        elif self.solo == 5:
+            lista_param = ['1', '13', '0','13', '14', '1']
+            
+        # elif self.camb_humi == 6:
+        #     lista_param = ['0', '6', '0','6', '7', '1','7','13','0']
+        # elif self.lato_amar == 7:
+        #     lista_param = ['0', '7', '0','7', '8', '1','8','13','0']
+        # elif self.lato_verm == 8:
+        #     lista_param = ['0', '8', '0','8', '9', '1','9','13','0']
+        # elif self.lato_vram == 9:
+        #     lista_param = ['0', '9', '0','9', '10', '1','10','13','0']
+        # elif self.luvi_crom == 10:
+        #     lista_param = ['0', '10', '0','10', '11', '1','11','13','0']
+        # elif self.luvi_hapl == 11:
+        #     lista_param = ['0', '11', '0','11', '12', '1','12','13','0']
+        # elif self.nito_hapl == 12:
+        #     lista_param = ['0', '12', '0','12', '13', '1']
+        # elif self.nito_verm == 13:
+        #     lista_param = ['0', '12', '0','12', '13', '1']
+
+        else: print('Parametro incorreto! digite um número entre 0 e 5')
         return lista_param
 
     # Method to debug the code without the need of installing a remote debugger
@@ -356,6 +401,7 @@ class SelectAgric:
             lista_param = self.lista_param_result()
             lista_param1 = self.lista_param_result1()
             lista_param2 = self.lista_param_result2()
+            lista_param3 = self.lista_param_result3()
 
             carta = self.carta
             espg = self.ESPG
@@ -427,8 +473,6 @@ class SelectAgric:
 
                 indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
-                temporario = None
-
                 for atributo in atributos:
                     cartas = atributo.attributes()[indiceCampo]
 
@@ -443,11 +487,6 @@ class SelectAgric:
                                         'OPERATOR': 0,
                                         'VALUE': carta,
                                         'OUTPUT': 'memory:'})
-                        break
-
-                if temporario is None:
-                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
-    
                         
             if self.escolha == 1:
                 # acesso ao municipio pela tabela de atributos do layer de Municipios de MG
@@ -457,8 +496,6 @@ class SelectAgric:
                 indiceCampo = vlayer.fields().indexOf(nomeCampo)
 
                 munic = self.munic
-
-                temporario = None
 
                 for atributo in atributos:
                     munics = atributo.attributes()[indiceCampo]
@@ -473,11 +510,7 @@ class SelectAgric:
                                         'FIELD': nomeCampo,
                                         'OPERATOR': 0,
                                         'VALUE': munic,
-                                        'OUTPUT': 'memory:'})
-                        break
-
-                if temporario is None:
-                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
+                                        'OUTPUT': 'memory:'})    
 
             if self.escolha == 2:
                 # acesso a mesoregiao pela tabela de atributos do layer de mesoregioes de MG
@@ -488,8 +521,6 @@ class SelectAgric:
 
                 meso = self.meso
 
-                temporario = None
-
                 for atributo in atributos:
                     mesos = atributo.attributes()[indiceCampo]
 
@@ -498,29 +529,27 @@ class SelectAgric:
                         #munic = 'D:/Usuarios/AProSEG_Pastagem/'+ munic + '.shp'
                         
                         # gera o municipio.shp
-                        temporario = processing.run("native:extractbyattribute",
-                                    {'INPUT': vlayer,
-                                        'FIELD': nomeCampo,
-                                        'OPERATOR': 0,
-                                        'VALUE': meso,
-                                        'OUTPUT': 'memory:'})
-                        break
+                        temporario = processing.run("native:extractbyattribute", {
+                            'INPUT': vlayer,
+                            'FIELD': nomeCampo,
+                            'OPERATOR': 0,
+                            'VALUE': meso,
+                            'OUTPUT': 'memory:'})    
 
-                if temporario is None:
-                    raise RuntimeError(f"Município '{munic}' não encontrado no layer. 'temporario' não foi gerado.")    
-    
              # Recorta layer propriedades (CAR)
             car = 'C:/PyQGIS/propried_' + self.var + '.shp'
 
-            processing.run("native:clip", {'INPUT':vlayer0,\
-            'OVERLAY':temporario['OUTPUT'], 'OUTPUT':car})
+            processing.run("native:clip", {
+                'INPUT':vlayer0,
+                'OVERLAY':temporario['OUTPUT'],
+                'OUTPUT':car})
 
             vlayer_car = QgsVectorLayer(car, "propried", "ogr")
             if not vlayer.isValid():
                 print("Layer failed to load!")
             else:
                 QgsProject.instance().addMapLayer(vlayer_car)
-
+            
             # --------------------------------------------------------------
             # criando arquivo de saida para o grass
             fnm_input = pasta + file
@@ -623,8 +652,8 @@ class SelectAgric:
             'OUTPUT': clas_slope
             })
 
-            # carregando o resultado em tela
-            iface.addRasterLayer(clas_slope)
+            # # carregando o resultado em tela
+            # iface.addRasterLayer(clas_slope)
 
             #-------------------------------------------------------
             #-------------------------------------------------------
@@ -695,7 +724,7 @@ class SelectAgric:
 
             # acessa pedoecol da zona
             dir_layer2 = pasta + file
-            rlayer = QgsRasterLayer(dir_layer2, "pedoecol_mg")
+            rlayer = QgsRasterLayer(dir_layer2, "agroecol_mg")
             if not rlayer.isValid():
                 print("Layer failed to load!")
 
@@ -745,10 +774,72 @@ class SelectAgric:
             # carregando o resultado em tela
             #iface.addRasterLayer(clas_aptagric)
             # pass
+            
+            # ----------------------------------------------------
+            # ----------------------------------------------------
+            # PROCESSA LAYER PRONASOLOS
+
+            pasta = 'C:/PyQGIS/Dados/'
+            file = 'PronaSolos_UF_MG.tif'
+
+            # acessa solos da zona
+            dir_layer2 = pasta + file
+            rlayer = QgsRasterLayer(dir_layer2, "solos")
+            if not rlayer.isValid():
+                print("Layer failed to load!")
+
+            # QgsProject.instance().addMapLayer(rlayer)
+
+            # acesso as cartas pela tabela de atributos do layer de articulaçoes do IBGE (temporario)
+
+            solos = 'C:/PyQGIS/Solos_' + self.var + '.tif'
+
+            # recorta solos pelo limite
+            processing.run("gdal:cliprasterbymasklayer",
+                        {'INPUT': rlayer,
+                            'MASK': temporario['OUTPUT'],
+                            'SOURCE_CRS': 'EPSG:4674 - SIRGAS 2000',
+                            'TARGET_CRS': 'EPSG:'+str(self.zona)+'-SIRGAS 2000/UTM Zone'+str(self.zona)+'S',
+                            'TARGET_EXTENT': None,
+                            'NODATA': 0,
+                            'ALPHA_BAND': False,
+                            'CROP_TO_CUTLINE': True,
+                            'KEEP_RESOLUTION': False,
+                            'SET_RESOLUTION': False,
+                            'X_RESOLUTION': 30,
+                            'Y_RESOLUTION': 30,
+                            'MULTITHREADING': False,
+                            'OPTIONS': '',
+                            'DATA_TYPE': 0,
+                            'EXTRA': '',
+                            'OUTPUT': solos})
+            
+            #  # carregando o resultado em tela
+            # iface.addRasterLayer(AptAgric_carta)
+
+            clas_solos = 'C:/PyQGIS/ClasSolos_' + self.var + '.tif'
+
+            # classes de solo pela a escolha do usuario
+            processing.run("native:reclassifybytable", {
+                'INPUT_RASTER': solos,
+                'RASTER_BAND': 1,
+                'TABLE': lista_param3,
+                'NO_DATA':0,
+                'RANGE_BOUNDARIES':1,
+                'NODATA_FOR_MISSING':False,
+                'DATA_TYPE':5,
+                'OUTPUT': clas_solos
+            })
+
+            # carregando o resultado em tela
+            #iface.addRasterLayer(clas_aptagric)
+            # pass
 
             #-------------------------------------------------------
             #-------------------------------------------------------
             # OVERLAY (BOOLEANO)
+            
+            # car_rst
 
             # ClasDecliv
             clas_slope = 'C:/PyQGIS/ClasSlope_' + self.var + '.tif'
@@ -761,17 +852,21 @@ class SelectAgric:
             iface.addRasterLayer(clas_past)
             
             # AptAgric
-            # saida7 em aptagric é saida8 aqui
             clas_aptagric = 'C:/PyQGIS/ClasAptAgric_' + self.var + '.tif'
             # carregando o resultado em tela
             iface.addRasterLayer(clas_aptagric)
+            
+            # Classes principais do PRONASOLOS
+            clas_solos = 'C:/PyQGIS/ClasSolos_' + self.var + '.tif'
+            # carregando o resultado em tela
+            iface.addRasterLayer(clas_solos)
 
-             # Resultado Final (seleção de áreas para agricultura)
+             # seleção de áreas para agricultura
             select_agric = 'C:/PyQGIS/SelectAgric_' + self.var + '.tif'
 
             #  Overlay (booleano) ClasDecliv, DegrPast, AptAgric
             processing.run("native:rasterbooleanand", {
-                'INPUT': [clas_slope, clas_past, clas_aptagric],
+                'INPUT': [clas_slope, clas_past, clas_aptagric, clas_solos],
                 'REF_LAYER': clas_slope,
                 'NODATA_AS_FALSE': False,
                 'NO_DATA': 0,
@@ -781,10 +876,9 @@ class SelectAgric:
             # carregando o resultado em tela
             iface.addRasterLayer(select_agric)
 
-            # Resultado Final (seleção de áreas para agricultura)
-            area_select_agric = 'C:/PyQGIS/Area_SelectAgric_' + self.var + '.tif'
-
             # Classifica por limite de área (ha)
+            area_select_agric = 'C:/PyQGIS/Area_SelectAgric_' + self.var + '.tif'
+            
             processing.run(
             "grass7:r.reclass.area",
             {'input': select_agric,
@@ -801,5 +895,42 @@ class SelectAgric:
             
              # carregando o resultado em tela
             iface.addRasterLayer(area_select_agric)
+            
+            # Converte area_select_agric para vetor
+            vlayer_are_selec_agr = 'C:/PyQGIS/Area_SelectAgric' + self.var + '.shp'
+            
+            processing.run("gdal:polygonize", 
+            {'INPUT':area_select_agric,
+            'BAND':1,
+            'FIELD':'areselagr',
+            'EIGHT_CONNECTEDNESS':False,
+            'EXTRA':'',
+            'OUTPUT':vlayer_are_selec_agr})
+            
+            # carregando o resultado em tela
+            vlayer2 = QgsVectorLayer(vlayer_are_selec_agr, "Area_SelectAgric", "ogr")
+            
+            if not vlayer2.isValid():
+                print("Layer failed to load!")
+            else:
+                QgsProject.instance().addMapLayer(vlayer2)
+            
+            # Recorta select_agric pelo CAR
+            area_selec_agric_car = 'C:/PyQGIS/Area_SelectAgric_CAR_' + self.var + '.shp'
 
+            #run the clip tool
+            processing.run("native:clip", {
+            'INPUT':car,
+            'OVERLAY':vlayer_are_selec_agr,
+            'OUTPUT':area_selec_agric_car
+            })
+            
+            # carregando o resultado em tela
+            vlayer3 = QgsVectorLayer(area_selec_agric_car, "Area_SelectAgric_car", "ogr")
+           
+            if not vlayer3.isValid():
+                print("Layer failed to load!")
+            else:
+                QgsProject.instance().addMapLayer(vlayer3)
+        
             pass
